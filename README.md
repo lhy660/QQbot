@@ -29,6 +29,9 @@ HTTP客户端（即发信息端）端口为：
 5800
 ```
 当然你可以在aichat.py文件中自行修改
+
+⚠️请将aichat.py的第60行中的qq号更改为自己qq机器人的qq号。
+
 # 部署
 请使用Debian/Ubuntu系统部署，推荐Debian12+，Ubuntu22.04+
 安装依赖：
