@@ -7,6 +7,7 @@ https://github.com/NapNeko/NapCatQQ
 
 napcat官方文档:
 https://www.napcat.wiki/guide/start-install
+
 ### 简介：
 这是一个名为“芒果”的智能聊天机器人后端服务。它基于 Python 的 Flask 框架搭建，通过HTTP协议与Napcat客户端通信，为用户在QQ群或私聊中提供AI（使用deepseek模型）对话、签到、转账、银行存取款、抽奖、点赞等一系列趣味互动功能。
 ### 使用示例：
@@ -14,6 +15,20 @@ https://www.napcat.wiki/guide/start-install
 ![示例2](example-image/Image_1757391230418.png)
 图一是机器人给用户点名片赞，图二是机器人调用deepseek跟用户聊天。
 
+## 注意⚠️
+目前需要deepseek的api才能使用，在使用前请确保拥有key。
+后续我们会优化代码，分离大模型与固定的交互功能，使其没有key也能正常用。
+
+## 必看⚠️
+HTTP服务端(即收信息端）端口为：
+```
+5700
+```
+HTTP客户端（即发信息端）端口为：
+```
+5800
+```
+当然你可以在aichat.py文件中自行修改
 # 部署
 请使用Debian/Ubuntu系统部署，推荐Debian12+，Ubuntu22.04+
 安装依赖：
@@ -39,6 +54,10 @@ source qqbot/bin/activate
 安装所需要库：
 ```
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 
+```
+设置deepseek api的key：
+```
+export AIKEY={输入你的ket}
 ```
 运行qqbot后端程序：
 ```
