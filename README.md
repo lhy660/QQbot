@@ -16,21 +16,34 @@ https://www.napcat.wiki/guide/start-install
 
 # 部署
 请使用Debian/Ubuntu系统部署，推荐Debian12+，Ubuntu22.04+
-
+安装依赖：
 ```
-sudo apt update && sudo apt install python3 python3-venv python3-pip
+sudo apt update && sudo apt install git python3 python3-venv python3-pip
 ```
+克隆本项目：
+```
+git clone --depth=1 https://github.com/lhy660/QQbot.git
+```
+进入项目目录：
+```
+cd QQbot
+```
+创建python虚拟环境：
 ```
 python3 -m venv qqbot
 ```
+登入虚拟环境：
 ```
 source qqbot/bin/activate
 ```
+安装所需要库：
 ```
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple 
 ```
+运行qqbot后端程序：
 ```
 python3 aichat.py
 ```
 按ctrl+c退出Flask机器人后端程序。
+
 README.md文档还正在完善，敬请期待……
