@@ -1,23 +1,18 @@
-# aichat.py
-from flask import Flask, request # type: ignore
+from flask import Flask, request
 import requests
 import os
 import json
 from collections import deque
-from openai import OpenAI # type: ignore
+from openai import OpenAI
 from fuctions import toolbox, chat
 
 app = Flask(__name__)
 
-# 初始化 OpenAI 客户端
 api_key = os.getenv('AIKEY')
 client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
 
-# 历史记录存储目录
 HISTORY_DIR = "chat_histories"
 os.makedirs(HISTORY_DIR, exist_ok=True)
-
-# 用户历史记录
 user_histories = {}
 
 def load_user_histories():
@@ -47,8 +42,7 @@ def save_user_history(user_id, history):
     except Exception as e:
         print(f"保存用户 {user_id} 的历史记录失败: {e}")
 
-# 启动时加载历史记录
-load_user_histories()
+load_user_histories() # 启动时加载历史记录
 
 @app.route('/', methods=['POST'])
 def post_data():
