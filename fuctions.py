@@ -41,7 +41,7 @@ def chat(user_id, group_id, message_type, parameter, at_qq, message2, client, us
         return
 
 def geitadianzan(user_id, group_id, message_type, parameter, at_qq):
-    """给别人点赞"""
+    """给他点赞"""
     today = datetime.now().strftime('%Y-%m-%d')
     config = configparser.ConfigParser()
     config.read('data.ini')
@@ -100,7 +100,7 @@ def toujinbi(user_id, group_id, message_type, parameter, at_qq):
     response4 = requests.get(url4)
 
 def yinhangxitong(user_id, group_id, message_type, parameter, at_qq):
-    """银行系统帮助"""
+    """银行系统"""
     url =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=银行系统%0A—————————————%0A银行存款|银行取款%0A—————————————%0A格式如下%0A“存款+金额”%0A“取款+金额”%0A例如下方信息%0A存款520将金币存入银行可防止被偷哦~%0A%0A—————————————%0A转账%0A—————————————%0A可以将自己的金币转给他人，格式如下：%0A“转账+金额+@对象”%0A例如以下信息%0A“转账520@cnlhy”"
     response = requests.get(url)
 
@@ -157,7 +157,7 @@ def qukuan(user_id, group_id, message_type, parameter, at_qq):
     response3 = requests.get(url3)
 
 def zhanghu(user_id, group_id, message_type, parameter, at_qq):
-    """查看账户"""
+    """账户"""
     config = configparser.ConfigParser()
     config.read('data.ini')
     coins = int(config.get(str(user_id), 'coins', fallback=0))
@@ -188,7 +188,7 @@ def qiandao(user_id, group_id, message_type, parameter, at_qq):
     response2 = requests.get(url2)
 
 def dianzan(user_id, group_id, message_type, parameter, at_qq):
-    """给自己点赞"""
+    """给我点赞"""
     today = datetime.now().strftime('%Y-%m-%d')
     config = configparser.ConfigParser()
     config.read('data.ini')
@@ -265,7 +265,6 @@ def zhuanzhang(user_id, group_id, message_type, parameter, at_qq):
         url3 =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=转账%0A—————————————%0A转账{parameter}成功。您目前还剩余{new_coins}个金币。%0A—————————————%0A✨北京时间✨%0A{stime}"
         response2 = requests.get(url3)
 
-# 工具函数字典
 toolbox = {
     "给我点赞": dianzan,
     "菜单": caidan,
