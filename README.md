@@ -12,6 +12,7 @@ https://www.napcat.wiki/guide/start-install
 这是一个名为“芒果”的智能聊天机器人后端服务。它基于 Python 的 Flask 框架搭建，通过HTTP协议与Napcat客户端通信，为用户在QQ群或私聊中提供AI（使用deepseek模型）对话、签到、转账、银行存取款、抽奖、点赞等一系列趣味互动功能。
 ### 最近更新：
 将主程序与固定交互函数分离，主程序文件为aichat.py，固定交互函数文件为fuctions.py
+
 机器人聊天的方案进行更改，从点对点变为群聊形式的点对点。
 
 ### 使用示例：
