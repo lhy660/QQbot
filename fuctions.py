@@ -3,45 +3,9 @@ import requests
 import configparser
 from datetime import datetime
 
-def chat(user_id, group_id, message_type, parameter, at_qq, message2, client, user_histories, save_user_history):
-    """聊天功能"""
-    if at_qq is None:
-        at_qq = 0
-    if int(at_qq) == 3035397258 or message_type == "private":
-        stime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        user_id_str = str(user_id)
-        if user_id_str not in user_histories:
-            user_histories[user_id_str] = __import__('collections').deque(maxlen=15)
-        user_dialogue_history = user_histories[user_id_str]
-        if message2.strip():
-            user_dialogue_history.append({"role": "user", "content": message2.strip()})
-        model_name = "deepseek-v4-flash"
-        system_prompt = f"""你叫芒果，性格乖巧热情
-【重要规则】
-1. 你是一个真人，不是AI助手
-2. 回答必须只有纯对话文字，不要包含任何动作、表情、神态描写
-3. 不要用括号、星号或其他符号描述状态
-4. 回答要自然简短，像真人聊天一样
-5.你目前最大只能输出200tokens值，所以合理安排语言
-6.现在的时间是{stime}"""
-        messages = [{"role": "system", "content": system_prompt.strip()}]
-        messages.extend(user_dialogue_history)
-        try:
-            response = client.chat.completions.create(model=model_name, messages=messages, max_tokens=200, temperature=0.5, extra_body={"thinking":{"type":"disabled"}})
-            ai_reply = response.choices[0].message.content.strip().replace('\n', ' ')
-            user_dialogue_history.append({"role": "assistant", "content": ai_reply})
-            save_user_history(user_id_str, user_dialogue_history)
-            url2 = f"http://127.0.0.1:5700/send_msg?&message_type={message_type}&group_id={group_id}&user_id={user_id}&message={ai_reply}"
-            response = requests.get(url2)
-        except Exception as e:
-            url3 = f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message={str(e)}"
-            response = requests.get(url3)
-    else:
-        print("芒果暂不处理")
-        return
 
 def geitadianzan(user_id, group_id, message_type, parameter, at_qq):
-    """给他点赞"""
+    """给别人点赞"""
     today = datetime.now().strftime('%Y-%m-%d')
     config = configparser.ConfigParser()
     config.read('data.ini')
@@ -100,7 +64,7 @@ def toujinbi(user_id, group_id, message_type, parameter, at_qq):
     response4 = requests.get(url4)
 
 def yinhangxitong(user_id, group_id, message_type, parameter, at_qq):
-    """银行系统"""
+    """银行系统帮助"""
     url =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=银行系统%0A—————————————%0A银行存款|银行取款%0A—————————————%0A格式如下%0A“存款+金额”%0A“取款+金额”%0A例如下方信息%0A存款520将金币存入银行可防止被偷哦~%0A%0A—————————————%0A转账%0A—————————————%0A可以将自己的金币转给他人，格式如下：%0A“转账+金额+@对象”%0A例如以下信息%0A“转账520@cnlhy”"
     response = requests.get(url)
 
@@ -157,7 +121,7 @@ def qukuan(user_id, group_id, message_type, parameter, at_qq):
     response3 = requests.get(url3)
 
 def zhanghu(user_id, group_id, message_type, parameter, at_qq):
-    """账户"""
+    """查看账户"""
     config = configparser.ConfigParser()
     config.read('data.ini')
     coins = int(config.get(str(user_id), 'coins', fallback=0))
@@ -188,7 +152,7 @@ def qiandao(user_id, group_id, message_type, parameter, at_qq):
     response2 = requests.get(url2)
 
 def dianzan(user_id, group_id, message_type, parameter, at_qq):
-    """给我点赞"""
+    """给自己点赞"""
     today = datetime.now().strftime('%Y-%m-%d')
     config = configparser.ConfigParser()
     config.read('data.ini')
@@ -265,6 +229,7 @@ def zhuanzhang(user_id, group_id, message_type, parameter, at_qq):
         url3 =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=转账%0A—————————————%0A转账{parameter}成功。您目前还剩余{new_coins}个金币。%0A—————————————%0A✨北京时间✨%0A{stime}"
         response2 = requests.get(url3)
 
+# 工具函数字典
 toolbox = {
     "给我点赞": dianzan,
     "菜单": caidan,
