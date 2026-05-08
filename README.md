@@ -24,7 +24,7 @@ https://www.napcat.wiki/guide/start-install
 图一是机器人给用户点名片赞，图二是机器人调用deepseek跟用户聊天，图三是机器人智能调用固定交互功能。
 
 ## 注意⚠️
-需要deepseek的api才能使用，在使用前请确保拥有key。
+除了固定交互功能，聊天与智能调用需要deepseek的api才能使用，在使用前请确保拥有key。
 
 ## 必看⚠️
 HTTP服务端(即收信息端）端口为：
