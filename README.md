@@ -20,7 +20,7 @@ https://www.napcat.wiki/guide/start-install
 ### 使用示例：
 ![示例1](example-image/1.png)
 ![示例2](example-image/2.png)
-![示例2](example-image/3.jpg)
+![示例2](example-image/3.png)
 图一是机器人给用户点名片赞，图二是机器人调用deepseek跟用户聊天，图三是机器人智能调用固定交互功能。
 
 ## 注意⚠️
