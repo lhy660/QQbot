@@ -279,7 +279,7 @@ def choujinbi(user_id, group_id, message_type, parameter, at_qq):
 def caidan(user_id, group_id, message_type, parameter, at_qq):
     """菜单"""
     stime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    url =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=✨菜单✨%0A—————————————%0A💳银行系统💳|🔥签到🔥%0A💻小游戏💻|🔥抽金币🔥%0A🌚聊天功能🌝|❤给我点赞❤%0A—————————————%0A✨北京时间✨%0A{stime}"
+    url =f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message=✨菜单✨%0A—————————————%0A💳银行系统💳|🔥签到🔥%0A❤给我点赞❤|🔥抽金币🔥%0A—————————————%0A✨北京时间✨%0A{stime}"
     response = requests.get(url)
 
 def zhuanzhang(user_id, group_id, message_type, parameter, at_qq):
