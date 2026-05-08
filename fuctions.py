@@ -4,6 +4,86 @@ import configparser
 from datetime import datetime
 
 
+def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client, chat_history, save_global_history):
+    if at_qq is None:
+        at_qq = 0
+    if int(at_qq) == 3035397258 or message_type == "private":
+        stime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        system_prompt = f"""你叫芒果，性格乖巧热情
+【重要规则】
+1.你是一个真人，不能承认自己是AI或者什么助手
+2.回答必须只有纯对话文字，不要包含任何动作、表情、神态描写.可以适当在回复中添加emoji表情
+3.回答要自然简短，像真人聊天一样
+4.你目前最大只能输出200tokens值，所以合理安排语言
+5.现在的时间是{stime}
+6.要能区分不同的说话对象，谁说的话就是谁说的"""
+
+        messages = [{"role": "system", "content": system_prompt}]
+        for record in chat_history:
+            if record['role'] == 'user':
+                messages.append({"role": "user", "content": f"{record['name']}说：{record['content']}"})
+            else:
+                messages.append({"role": "assistant", "content": record['content']})
+        messages.append({"role": "user", "content": f"{sender_nickname}说：{message2}"})
+        try:
+            response = client.chat.completions.create(
+                model="deepseek-v4-pro",
+                messages=messages,
+                max_tokens=200,
+                temperature=0.7,
+                tools=tools,
+                tool_choice="auto",
+                extra_body={"thinking":{"type":"disabled"}}
+            )
+            ai_msg = response.choices[0].message
+            #情况1：模型正常回复文字，没有调用工具
+            if not ai_msg.tool_calls:
+                ai_reply = ai_msg.content.strip().replace('\n', ' ')
+                chat_history.append({
+                    "role": "user", "name": sender_nickname,
+                    "content": message2.strip(), "timestamp": stime
+                })
+                chat_history.append({
+                    "role": "assistant", "name": "芒果",
+                    "content": ai_reply, "timestamp": stime
+                })
+                save_global_history(chat_history)
+                url = f"http://127.0.0.1:5700/send_msg?&message_type={message_type}&group_id={group_id}&user_id={user_id}&message={ai_reply}"
+                requests.get(url)
+                return
+            #情况2：模型决定调用工具
+            func_map = {
+                "caidan": caidan,
+                "dianzan": dianzan,
+                "qiandao": qiandao,
+                "zhanghu": zhanghu,
+                "choujinbi": choujinbi
+            }
+            executed_funcs = []
+            for tool_call in ai_msg.tool_calls:
+                fname = tool_call.function.name
+                if fname in func_map:
+                    func_map[fname](user_id, group_id, message_type, parameter=0, at_qq=0)
+                    executed_funcs.append(fname)
+            confirm_msg = "已执行功能：" + "、".join(executed_funcs)
+            chat_history.append({
+                "role": "user", "name": sender_nickname,
+                "content": message2.strip(), "timestamp": stime
+            })
+            chat_history.append({
+                "role": "assistant", "name": "芒果",
+                "content": confirm_msg,
+                "timestamp": stime
+            })
+            save_global_history(chat_history)
+        except Exception as e:
+            url3 = f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message={str(e)}"
+            requests.get(url3)
+    else:
+        print("芒果暂不处理")
+        return
+
+
 def geitadianzan(user_id, group_id, message_type, parameter, at_qq):
     """给别人点赞"""
     today = datetime.now().strftime('%Y-%m-%d')
@@ -243,3 +323,47 @@ toolbox = {
     "转账": zhuanzhang,
     "给他点赞": geitadianzan
 }
+
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "caidan",
+            "description": "获取所有功能菜单",
+            "parameters": {"type": "object", "properties": {}, "required": []}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "dianzan",
+            "description": "给用户自己点赞",
+            "parameters": {"type": "object", "properties": {}, "required": []}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "qiandao",
+            "description": "每日签到/打卡领取金币",
+            "parameters": {"type": "object", "properties": {}, "required": []}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "check_account",
+            "description": "查询用户的账户余额",
+            "parameters": {"type": "object", "properties": {}, "required": []}
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "draw_coins",
+            "description": "抽金币，花50金币随机得75~200金币",
+            "parameters": {"type": "object", "properties": {}, "required": []}
+        }
+    }
+]

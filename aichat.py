@@ -6,7 +6,7 @@ import re
 from collections import deque
 from datetime import datetime
 from openai import OpenAI # type: ignore
-from fuctions import toolbox
+from fuctions import toolbox, chat
 
 app = Flask(__name__)
 
@@ -43,65 +43,6 @@ def save_global_history(history):
 # 全局聊天记录
 chat_history = load_global_history()
 
-def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client, chat_history, save_global_history):
-    """聊天功能"""
-    if at_qq is None:
-        at_qq = 0
-    if int(at_qq) == 3035397258 or message_type == "private":
-        stime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        system_prompt = f"""你叫芒果，性格乖巧热情
-【重要规则】
-1. 你是一个真人，不是AI助手
-2. 回答必须只有纯对话文字，不要包含任何动作、表情、神态描写
-3. 回答要自然简短，像真人聊天一样
-4. 你目前最大只能输出200tokens值，所以合理安排语言
-5. 现在的时间是{stime}
-6. 你必须清楚记住每个人说的话，不能把不同用户的信息搞混
-7. 要能区分不同的说话对象，谁说的话就是谁说的"""
-        # 构建消息列表
-        messages = [{"role": "system", "content": system_prompt}]
-        
-        # 添加历史记录（每条记录单独作为一条消息）
-        for record in chat_history:
-            if record['role'] == 'user':
-                # 用户消息，带上用户名
-                messages.append({"role": "user", "content": f"{record['name']}说：{record['content']}"})
-            else:
-                # 机器人消息
-                messages.append({"role": "assistant", "content": record['content']})
-        
-        # 添加当前用户消息
-        messages.append({"role": "user", "content": f"{sender_nickname}说：{message2}"})
-        try:
-            response = client.chat.completions.create(
-                model="deepseek-v4-flash", 
-                messages=messages, 
-                max_tokens=200, 
-                temperature=0.5, 
-                extra_body={"thinking":{"type":"disabled"}}
-            )
-            ai_reply = response.choices[0].message.content.strip().replace('\n', ' ')
-            chat_history.append({
-                "role": "user",
-                "name": sender_nickname,
-                "content": message2.strip(),
-                "timestamp": stime
-            })
-            chat_history.append({
-                "role": "assistant",
-                "name": "芒果",
-                "content": ai_reply,
-                "timestamp": stime
-            })
-            save_global_history(chat_history)
-            url2 = f"http://127.0.0.1:5700/send_msg?&message_type={message_type}&group_id={group_id}&user_id={user_id}&message={ai_reply}"
-            response = requests.get(url2)
-        except Exception as e:
-            url3 = f"http://127.0.0.1:5700/send_msg?message_type={message_type}&group_id={group_id}&user_id={user_id}&message={str(e)}"
-            response = requests.get(url3)
-    else:
-        print("芒果暂不处理")
-        return
 
 @app.route('/', methods=['POST'])
 def post_data():
