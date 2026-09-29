@@ -65,9 +65,7 @@ source qqbot/bin/activate
 ```
 安装所需要库：
 ```
-pip install flask requests openai requests configparser openai playwright -i https://pypi.tuna.tsinghua.edu.cn/simple
-export PLAYWRIGHT_DOWNLOAD_HOST="https://cdn.npmmirror.com/binaries/playwright"
-python -m playwright install chromium
+pip install flask requests openai requests configparser openai playwright -i https://pypi.tuna.tsinghua.edu.cn/simple && export PLAYWRIGHT_DOWNLOAD_HOST="https://cdn.npmmirror.com/binaries/playwright" && python -m playwright install chromium
 ```
 设置deepseek api的key：
 ```
