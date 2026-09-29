@@ -6,16 +6,18 @@ napcat项目地址:
 https://github.com/NapNeko/NapCatQQ
 
 napcat官方文档:
-https://www.napcat.wiki/guide/start-install
+https://napneko.github.io/
 
 ### 简介：
 这是一个名为“芒果”的智能聊天机器人后端服务。它基于 Python 的 Flask 框架搭建，通过HTTP协议与Napcat客户端通信，为用户在QQ群或私聊中提供AI（使用deepseek模型）对话、签到、转账、银行存取款、抽奖、点赞等一系列趣味互动功能。
 ### 最近更新：
 1.代码结构优化：将主程序（aichat.py）与固定交互功能（functions.py）分离，提升代码可读性与维护性。
 
-2.对话机制升级：聊天模式由“一对一私聊”调整为“群聊环境下的点对点交互”，并将底层模型切换为 DeepSeek-V4-Pro。
+2.对话机制升级：聊天模式由“一对一私聊”调整为“群聊环境下的点对点交互”，并将底层模型切换为 DeepSeek-v4-flash。
 
 3.智能调用功能：借助 DeepSeek 的 Tool Calls 机制，芒果能根据语义自动判断并调用对应功能。即使你不使用标准关键词，它也能理解你的意图，准确调用对应功能（目前已支持“抽金币”、“给我点赞”、“菜单”、”账户“、”签到“五个功能）。
+
+4.添加联网搜索功能，但搜索的时候，仅仅只能获取网页标题跟描述信息。
 
 ### 使用示例：
 ![示例1](example-image/1.png)
