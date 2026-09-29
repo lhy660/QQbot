@@ -3,8 +3,6 @@ import requests
 import os
 import json
 import re
-from collections import deque
-from datetime import datetime
 from openai import OpenAI # type: ignore
 from fuctions import toolbox, chat
 
@@ -13,35 +11,6 @@ app = Flask(__name__)
 # 初始化 OpenAI 客户端
 api_key = os.getenv('AIKEY')
 client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
-
-# 全局聊天记录文件
-HISTORY_FILE = "chat_history.json"
-MAX_HISTORY = 200
-
-def load_global_history():
-    """加载全局聊天记录"""
-    if not os.path.exists(HISTORY_FILE):
-        return deque(maxlen=MAX_HISTORY)
-    try:
-        with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
-            history_data = json.load(f)
-            print(f"已加载聊天记录，共 {len(history_data)} 条记录")
-            return deque(history_data, maxlen=MAX_HISTORY)
-    except Exception as e:
-        print(f"加载聊天记录失败: {e}")
-        return deque(maxlen=MAX_HISTORY)
-
-def save_global_history(history):
-    """保存全局聊天记录"""
-    try:
-        history_list = list(history)
-        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
-            json.dump(history_list, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"保存聊天记录失败: {e}")
-
-# 全局聊天记录
-chat_history = load_global_history()
 
 
 @app.route('/', methods=['POST'])
@@ -80,12 +49,12 @@ def post_data():
         if instruction in toolbox:
             toolbox[instruction](user_id, group_id, message_type, parameter, at_qq)
         else:
-            chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client, chat_history, save_global_history)
+            chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client)
     else:
         if message2 in toolbox:
             toolbox[message2](user_id, group_id, message_type, parameter, at_qq)
         else:
-            chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client, chat_history, save_global_history)
+            chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client)
     return "_"
 
 if __name__ == '__main__':
