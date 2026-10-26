@@ -7,7 +7,7 @@ from datetime import datetime
 from collections import deque
 from search_browser import search, format_results, close_browser
 
-BOT_QQ = "3035397258"
+BOT_QQ = os.getenv('QQID')
 HISTORY_FILE = "chat_history.json"
 MAX_HISTORY = 200
 
@@ -36,7 +36,7 @@ def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nic
 
         try:
             response = client.chat.completions.create(
-                model="deepseek-v4-flash",
+                model="deepseek-flash",
                 messages=messages,
                 max_tokens=200,
                 temperature=0.7,
