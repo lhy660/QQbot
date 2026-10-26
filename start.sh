@@ -119,13 +119,11 @@ install_deps() {
     source "$VENV_ACTIVATE"
 
     echo -e "正在通过清华镜像源安装 Python 依赖..."
-    if pip install flask requests openai requests configparser openai playwright \
-            -i https://pypi.tuna.tsinghua.edu.cn/simple \
-        && export PLAYWRIGHT_DOWNLOAD_HOST="https://cdn.npmmirror.com/binaries/playwright" \
-        && python -m playwright install chromium; then
+    if pip install flask requests openai \
+            -i https://pypi.tuna.tsinghua.edu.cn/simple; then
         pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
         pip cache purge 2>/dev/null || true
-        echo -e "${C_GREEN}依赖及 Chromium 安装完成，已清理 pip 下载缓存。${C_RESET}"
+        echo -e "${C_GREEN}依赖安装完成，已清理 pip 下载缓存。${C_RESET}"
     else
         echo -e "${C_RED}依赖安装失败，请检查网络或镜像源后重试。${C_RESET}"
     fi

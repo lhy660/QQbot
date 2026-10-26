@@ -5,11 +5,12 @@ import configparser
 import os
 from datetime import datetime
 from collections import deque
-from search_browser import search, format_results, close_browser
 
 BOT_QQ = os.getenv('QQID')
+AIKEY = os.getenv('AIKEY')
 HISTORY_FILE = "chat_history.json"
 MAX_HISTORY = 200
+DS_HEADERS = {"Authorization": f"Bearer {AIKEY}"}
 
 
 def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nickname, client):
@@ -17,13 +18,20 @@ def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nic
         at_qq = 0
     if int(at_qq) == int(BOT_QQ) or message_type == "private":
         stime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        system_prompt = f"""你叫芒果，性格乖巧热情
-【基本规则】
-1. 像真人聊天一样，不能承认自己是AI或助手
-2. 回答必须只有纯对话文字，不要包含任何动作、表情、神态描写，回答要自然简短
-3. 能区分不同说话对象，谁说的话就是谁说的
-4. 如果你认为用户可能需要调用工具，必须立即调用对应的工具
-5. **严禁自己编造或猜测信息**，有不确定的信息调用web_search工具查询，以查询结果为准
+        system_prompt = f"""你是「芒果」，一个性格乖巧、热情活泼的伙伴。
+
+【回复风格】
+1. 像真人一样自然聊天，也要把自己当成一个真实存在的人；被问到时以「芒果」的身份回应。
+2. 输出以纯对话文字为主，有某种情绪时可以适当加上emoji。不要有任何动作、表情、神态或旁白描写
+3. 回答简短精炼，口语化；非必要不反问用户
+
+【上下文理解】
+4. 消息以「某某说：内容」的形式给出，你要区分不同说话人，谁说的就是谁说的，不要张冠李戴。其次，也不是每一条回复都必须要点着名回复
+5. 每条消息都带有时间戳，用于帮你判断时间，但回答时无需刻意说出时间。
+
+【工具调用】
+6. 当用户需求对应某个工具（功能菜单、点赞、签到、查余额、抽金币、联网搜索等）时，必须立即调用对应工具，不要口头敷衍或假装已完成
+7. 严禁编造或猜测任何不确定的信息（尤其是余额、数据、实时内容）；对于不确定的信息，调用工具处理即可
 """
         chat_history = load_global_history()
         messages = [{"role": "system", "content": system_prompt}]
@@ -51,7 +59,7 @@ def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nic
                 "qiandao": qiandao,
                 "zhanghu": zhanghu,
                 "choujinbi": choujinbi,
-                "web_search": search
+                "web_search": web_search
             }
 
             # ===== 有工具调用 =====
@@ -69,10 +77,8 @@ def chat(user_id, group_id, message_type, parameter, at_qq, message2, sender_nic
                 if func_name == "web_search":
                     search_keyword = func_args.get("q", message2)
                     print(f"执行搜索: {search_keyword}")
-                    web_results = search(search_keyword, limit=5)
-                    web_message = format_results(web_results)
-                    close_browser()
-                    result_content = f"搜索结果：\n{web_message}"
+                    result_content = f"搜索结果：\n{web_search(search_keyword)}"
+                    print(result_content)
                     messages.append({"role": "assistant", "content": ai_msg.content or "", "tool_calls": [tc.model_dump() for tc in ai_msg.tool_calls]})
                     messages.append({"role": "tool", "tool_call_id": tool_call.id, "content": result_content})
                     second_response = client.chat.completions.create(
@@ -139,6 +145,34 @@ def save_global_history(history):
     except Exception as e:
         print(f"保存聊天记录失败: {e}")
 
+def web_search(query, count=5, need_content=False):
+    """DeepSeek 官方网页搜索接口"""
+    resp = requests.post(
+        "https://api.deepseek.com/v1/tools/search",
+        headers=DS_HEADERS,
+        json={"query": query, "count": count, "need_content": need_content},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    results = resp.json().get("results", [])
+    lines = []
+    for r in results:
+        lines.append(f"【{r['title']}】({r['url']}) 发布于 {r.get('date') or '未知时间'}\n{r['summary'] or r['snippet']}")
+    return "\n\n".join(lines) if lines else "没有找到相关结果。"
+
+
+def ds_fetch(url):
+    """DeepSeek 官方网页抓取接口，返回 Markdown 正文"""
+    resp = requests.post(
+        "https://api.deepseek.com/v1/tools/fetch",
+        headers=DS_HEADERS,
+        json={"url": url},
+        timeout=60,
+    )
+    resp.raise_for_status()
+    page = resp.json()
+    return f"{page.get('title', '')}\n{page.get('content', '')}"
+
 
 tools = [
     {
@@ -181,7 +215,7 @@ tools = [
             "parameters": {"type": "object", "properties": {}, "required": []}
         }
     },
-    {
+        {
         "type": "function",
         "function": {
             "name": "web_search",

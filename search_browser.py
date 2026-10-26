@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 搜索工具（Playwright 版 · 仅百度）
-
+该工具目前已启用，仅仅当备用方案使用了。
 命令行用法：
     python search_browser.py 搜索关键词
     python search_browser.py 搜索关键词 --count 5
@@ -17,7 +17,9 @@
     close_browser()                       # 用完后关闭浏览器
 
 首次使用需安装：
-    pip install playwright
+    source ~/qqbotenv/bin/activate  # 进入虚拟环境（可忽略）
+    export PLAYWRIGHT_DOWNLOAD_HOST="https://cdn.npmmirror.com/binaries/playwright"
+    pip install playwright -i https://pypi.tuna.tsinghua.edu.cn/simple
     python -m playwright install chromium
 """
 
