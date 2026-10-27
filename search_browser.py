@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 搜索工具（Playwright 版 · 仅百度）
-该工具目前已启用，仅仅当备用方案使用了。
+该工具目前已弃用，仅仅当备用方案使用了。
 命令行用法：
     python search_browser.py 搜索关键词
     python search_browser.py 搜索关键词 --count 5
